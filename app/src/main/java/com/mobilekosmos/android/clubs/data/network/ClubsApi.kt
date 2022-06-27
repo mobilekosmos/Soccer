@@ -44,7 +44,7 @@ private val networkOfflineCacheInterceptor = Interceptor { chain ->
 
     val cacheControl: CacheControl = if (Utils.isNetworkAvailable()) {
         CacheControl.Builder()
-            .maxAge(1, TimeUnit.DAYS)
+            .maxAge(1, TimeUnit.MINUTES)
             .build()
     } else {
         CacheControl.Builder()
@@ -61,7 +61,7 @@ private val networkCacheInterceptor = Interceptor { chain ->
     val request = chain.request()
     val cacheControl: CacheControl = if (Utils.isNetworkAvailable()) {
         CacheControl.Builder()
-            .maxAge(1, TimeUnit.DAYS)
+            .maxAge(1, TimeUnit.MINUTES)
             .build()
     } else {
         CacheControl.Builder()
