@@ -31,13 +31,13 @@ android {
     productFlavors {
         greenFlavor {
             dimension 'market'
-            buildConfigField "String", "HOST_URL", "\"https://62b9bbd641bf319d22841c93.mockapi.io/api/v1/soccer/clubs_europe\""
+            buildConfigField "String", "HOST_URL", "\"https://62b9bbd641bf319d22841c93.mockapi.io/api/v1/clubs_europe\""
         }
         // The new flavor, redFlavor, needs to be a different app. Therefore, it needs a different app ID.
         redFlavor {
             dimension 'market'
             applicationId "com.mobilekosmos.android.clubs2"
-            buildConfigField "String", "HOST_URL", "\"https://62b9bbd641bf319d22841c93.mockapi.io/api/v1/soccer/clubs_southamerica\""
+            buildConfigField "String", "HOST_URL", "\"https://62b9bbd641bf319d22841c93.mockapi.io/api/v1/clubs_southamerica\""
         }
     }
 }
