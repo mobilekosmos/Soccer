@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/FirstFragment">
+
+    <!-- There is a bug where setting label in the first fragment leads to all other fragments breaking "setTitle" being called inside other fragments.
+    So avoid using label and set the title programmatically. -->
+    <fragment
+            android:id="@+id/FirstFragment"
+            android:name="com.mobilekosmos.android.clubs.ui.ClubsFragment"
+            tools:layout="@layout/fragment_clubs">
+
+        <action
+                android:id="@+id/showClubDetails"
+                app:destination="@id/SecondFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/SecondFragment"
+            android:name="com.mobilekosmos.android.clubs.ui.ClubDetailFragment"
+            tools:layout="@layout/fragment_detail">
+
+        <argument
+                android:name="clubDetail"
+                app:argType="com.mobilekosmos.android.clubs.data.model.ClubEntity" />
+    </fragment>
+</navigation>

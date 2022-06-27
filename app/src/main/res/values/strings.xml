@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name" translatable="false">Clubs</string>
+    <string name="app_title" translatable="false">all about clubs</string>
+
+    <string name="error_loading">Error loading the data. Please check if the device has internet connection</string>
+
+    <string name="action_sort">Sort toggle</string>
+    <string name="club_image">The club\'s image</string>
+
+    <string name="detail_description"><![CDATA[
+        Der Club <b>%s</b> aus %s hat einen Wert von %s Millionen Euro.
+    ]]></string>
+
+    <string name="detail_description_2">%s konnte bislang %s Siege auf europäischer Ebene erreichen.</string>
+    <string name="club_value">%s Millionen</string>
+
+    <string name="club_image_description">Club image</string>
+
+    <string name="event_sorted_by_name">Sorted by club name</string>
+    <string name="event_sort_by_value">Sorted by club value</string>
+    <string name="retry">Retry</string>
+</resources>

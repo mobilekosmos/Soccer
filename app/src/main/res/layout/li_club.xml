@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:minHeight="?attr/listPreferredItemHeight"
+            android:foreground="?android:attr/selectableItemBackground"
+            tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+                android:id="@+id/club_image"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/club_image_description"
+                android:src="@drawable/no_image" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/club_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceListItem"
+                    android:text="@string/club_value"
+                    tools:text="FC Barcelona" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/club_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    tools:text="Spanien" />
+
+            <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/club_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:textAppearance="?textAppearanceListItemSecondary"
+                    tools:text="500 Millions" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
