@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,11 +24,6 @@ open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
 
     private lateinit var clubsListAdapter: ClubsListAdapter
     private val viewModel: ClubsViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -110,6 +108,25 @@ open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
                 clubsListAdapter.dataset = it
             }
         }
+
+        // Alternatively use 2 Material Chips, but if the amount of filters should grow in the future maybe the idea is not so good.
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_clubs, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.action_sort -> {
+                        viewModel.toggleSorting()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     // Attention: don't use this approach when showing a Toast/Popup/etc. as error. We could use this but then we would need special
@@ -150,20 +167,5 @@ open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
         val extras = FragmentNavigatorExtras(clubImageView to clubImageView.transitionName)
         val action = ClubsFragmentDirections.showClubDetails(clubObject)
         findNavController().navigate(action, extras)
-    }
-
-    // Alternatively use 2 Material Chips, but if the amount of filters should grow in the future maybe the idea is not so good.
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_clubs, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_sort -> {
-                viewModel.toggleSorting()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 }
