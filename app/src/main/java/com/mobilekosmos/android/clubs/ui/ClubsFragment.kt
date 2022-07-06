@@ -1,6 +1,5 @@
 package com.mobilekosmos.android.clubs.ui
 
-import android.app.ActivityOptions
 import android.os.Bundle
 import android.view.*
 import android.widget.ImageView
@@ -11,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.mobilekosmos.android.clubs.R
 import com.mobilekosmos.android.clubs.data.model.ClubEntity

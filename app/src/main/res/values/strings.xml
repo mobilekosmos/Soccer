@@ -7,11 +7,21 @@
     <string name="action_sort">Sort toggle</string>
     <string name="club_image">The club\'s image</string>
 
-    <string name="detail_description"><![CDATA[
-        Der Club <b>%s</b> aus %s hat einen Wert von %s Millionen Euro.
-    ]]></string>
+    <plurals name="detail_description">
+        <item quantity="one"><![CDATA[
+            Der Club <b>%1$s</b> aus %2$s hat einen Wert von %3$d Million Euro.
+        ]]>
+        </item>
+        <item quantity="other"><![CDATA[
+            Der Club <b>%1$s</b> aus %2$s hat einen Wert von %3$d Millionen Euro.
+        ]]>
+        </item>
+    </plurals>
 
-    <string name="detail_description_2">%s konnte bislang %s Siege auf europäischer Ebene erreichen.</string>
+    <plurals name="detail_description_2">
+        <item quantity="one">%1$s konnte bislang %2$d Sieg auf europäischer Ebene erreichen.</item>
+        <item quantity="other">%1$s konnte bislang %2$d Siege auf europäischer Ebene erreichen.</item>
+    </plurals>
     <string name="club_value">%s Millionen</string>
 
     <string name="club_image_description">Club image</string>

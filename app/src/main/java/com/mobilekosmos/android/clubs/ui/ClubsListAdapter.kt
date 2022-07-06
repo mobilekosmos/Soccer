@@ -1,12 +1,10 @@
 package com.mobilekosmos.android.clubs.ui
 
-import android.icu.number.IntegerWidth
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.mobilekosmos.android.clubs.R

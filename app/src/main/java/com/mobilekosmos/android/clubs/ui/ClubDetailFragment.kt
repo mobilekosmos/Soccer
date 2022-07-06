@@ -53,8 +53,9 @@ class ClubDetailFragment : Fragment() {
         val clubDetailName = objectEntity.country
         rootView.findViewById<TextView>(R.id.club_detail_country).text = clubDetailName
 
-        val clubDescriptionFirst = getString(
-            R.string.detail_description,
+        val clubDescriptionFirst = resources.getQuantityString(
+            R.plurals.detail_description,
+            objectEntity.value,
             objectEntity.name,
             objectEntity.country,
             objectEntity.value
@@ -63,10 +64,11 @@ class ClubDetailFragment : Fragment() {
         rootView.findViewById<TextView>(R.id.club_detail_description_1).text =
             HtmlCompat.fromHtml(clubDescriptionFirst, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        val clubDescriptionSecond = getString(
-            R.string.detail_description_2,
+        val clubDescriptionSecond = resources.getQuantityString(
+            R.plurals.detail_description_2,
+            objectEntity.european_titles.toInt(),
             objectEntity.name,
-            objectEntity.european_titles
+            objectEntity.european_titles.toInt()
         )
         rootView.findViewById<TextView>(R.id.club_detail_description_2).text = clubDescriptionSecond
 

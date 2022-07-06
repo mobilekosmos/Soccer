@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceBody1"
-                android:text="@string/detail_description" />
+                android:text="@plurals/detail_description" />
 
         <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/club_detail_description_2"
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceBody1"
-                android:text="@string/detail_description_2" />
+                android:text="@plurals/detail_description_2" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
