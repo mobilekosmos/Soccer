@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.SharedElementCallback
 import androidx.core.text.HtmlCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -18,6 +18,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.mobilekosmos.android.clubs.R
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
+import com.mobilekosmos.android.clubs.databinding.FragmentClubsBinding
 
 
 class ClubDetailFragment : Fragment() {

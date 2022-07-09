@@ -20,7 +20,7 @@ import com.mobilekosmos.android.clubs.databinding.FragmentClubsBinding
 import com.mobilekosmos.android.clubs.ui.model.ClubsViewModel
 
 
-open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
+class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
 
     private lateinit var clubsListAdapter: ClubsListAdapter
     private val viewModel: ClubsViewModel by viewModels()
@@ -29,7 +29,9 @@ open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+
+        // Use data binding (not view binding!) to easily switch views visibility before/while/after list loading.
         val binding: FragmentClubsBinding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_clubs,
@@ -43,6 +45,7 @@ open class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
 
         clubsListAdapter = ClubsListAdapter(this)
 
+        // We use view binding here just because we use data binding in this class so it comes handy.
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = clubsListAdapter
