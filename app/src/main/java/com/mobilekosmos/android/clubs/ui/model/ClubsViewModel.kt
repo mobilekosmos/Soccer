@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
 import com.mobilekosmos.android.clubs.data.repository.ClubsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 //class MyViewModel(private val repository: ClubsRepository) : ViewModel() {
@@ -15,9 +17,8 @@ class ClubsViewModel() : ViewModel() {
         SORT_BY_NAME_ASCENDING, SORT_BY_VALUE_DESCENDING
     }
 
-    var isSortedToastShown: Boolean = true
-
     private val clubsRepository = ClubsRepository()
+    private var sortingMode = SortingMode.SORT_BY_NAME_ASCENDING
 
     // Uses prefix "_" as it's the naming convention used in backing properties.
     private val _clubs: MutableLiveData<List<ClubEntity>> by lazy {
@@ -58,6 +59,11 @@ class ClubsViewModel() : ViewModel() {
      */
     val isNetworkErrorShown: LiveData<Boolean>
         get() = _isNetworkErrorShown
+
+    private val _eventSorted: MutableSharedFlow<SortingMode> by lazy {
+        MutableSharedFlow()
+    }
+    val eventSorted = _eventSorted.asSharedFlow()
 
     /**
      * Fetches data using Retrofit which is configured to cache the response for a short period of time.
@@ -102,15 +108,15 @@ class ClubsViewModel() : ViewModel() {
 
     fun toggleSorting() {
         clubs.value?.let {
-            val sortingMode = when (_eventSorted.value) {
+            val newSortingMode = when (sortingMode) {
                 SortingMode.SORT_BY_NAME_ASCENDING -> SortingMode.SORT_BY_VALUE_DESCENDING
                 SortingMode.SORT_BY_VALUE_DESCENDING -> SortingMode.SORT_BY_NAME_ASCENDING
-                // On first call this will be null and we are already sorted by name so we sort by value.
-                null -> SortingMode.SORT_BY_VALUE_DESCENDING
             }
-            sortClubsList(sortingMode)
-            isSortedToastShown = false
-            _eventSorted.value = sortingMode
+            sortClubsList(newSortingMode)
+            sortingMode = newSortingMode
+            viewModelScope.launch {
+                _eventSorted.emit(newSortingMode)
+            }
         }
     }
 
@@ -131,15 +137,5 @@ class ClubsViewModel() : ViewModel() {
                 clubsList.sortedBy { it.value }.reversed()
             }
         }
-    }
-
-    private val _eventSorted: MutableLiveData<SortingMode> by lazy {
-        MutableLiveData<SortingMode>()
-    }
-    val eventSorted: LiveData<SortingMode>
-        get() = _eventSorted
-
-    fun onSortedEventShown() {
-        isSortedToastShown = true
     }
 }

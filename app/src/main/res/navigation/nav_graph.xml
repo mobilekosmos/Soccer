@@ -9,7 +9,7 @@
     So avoid using label and set the title programmatically. -->
     <fragment
             android:id="@+id/FirstFragment"
-            android:name="com.mobilekosmos.android.clubs.ui.ClubsFragment"
+            android:name="com.mobilekosmos.android.clubs.ui.ClubsListFragment"
             tools:layout="@layout/fragment_clubs">
 
         <action

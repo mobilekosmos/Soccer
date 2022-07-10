@@ -10,6 +10,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +20,8 @@ import com.mobilekosmos.android.clubs.R
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
 import com.mobilekosmos.android.clubs.databinding.FragmentClubsBinding
 import com.mobilekosmos.android.clubs.ui.model.ClubsViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
@@ -77,26 +81,6 @@ class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
             if (isNetworkError) onNetworkError()
         }
 
-        // Observer for the sorting event.
-        viewModel.eventSorted.observe(viewLifecycleOwner) { sortingMode ->
-            sortingMode?.let {
-                context?.let {
-                    when (sortingMode) {
-                        ClubsViewModel.SortingMode.SORT_BY_NAME_ASCENDING -> onListSorted(
-                            it.getString(
-                                R.string.event_sorted_by_name
-                            )
-                        )
-                        ClubsViewModel.SortingMode.SORT_BY_VALUE_DESCENDING -> onListSorted(
-                            it.getString(
-                                R.string.event_sort_by_value
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
         return binding.root
     }
 
@@ -132,6 +116,15 @@ class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        // Observer for the sorting event.
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.eventSorted
+                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                    .collectLatest {
+                        showSortedListToast(it)
+                    }
+        }
     }
 
     // Attention: don't use this approach when showing a Toast/Popup/etc. as error. We could use this but then we would need special
@@ -160,17 +153,34 @@ class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
     /**
      * Method for displaying a Toast after the list was sorted using the toggle filter menu.
      */
-    private fun onListSorted(toastMessage: String) {
-        if (!viewModel.isSortedToastShown) {
-            Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show()
-            viewModel.onSortedEventShown()
+    private fun showSortedListToast(sortingMode: ClubsViewModel.SortingMode) {
+        context?.let {
+            when (sortingMode) {
+                ClubsViewModel.SortingMode.SORT_BY_NAME_ASCENDING -> showSortedListToast(
+                        it.getString(
+                                R.string.event_sorted_by_name
+                        )
+                )
+                ClubsViewModel.SortingMode.SORT_BY_VALUE_DESCENDING -> showSortedListToast(
+                        it.getString(
+                                R.string.event_sort_by_value
+                        )
+                )
+            }
         }
+    }
+
+    /**
+     * Method for displaying a Toast after the list was sorted using the toggle filter menu.
+     */
+    private fun showSortedListToast(toastMessage: String) {
+        Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show()
     }
 
     override fun onClubClick(clubObject: ClubEntity, clubImageView: ImageView) {
         // Note: using this instead of "old" navigation method the ripple effect is not visible, maybe bug or works as designed, not sure.
         val extras = FragmentNavigatorExtras(clubImageView to clubImageView.transitionName)
-        val action = ClubsFragmentDirections.showClubDetails(clubObject)
+        val action = ClubsListFragmentDirections.showClubDetails(clubObject)
         findNavController().navigate(action, extras)
     }
 }
