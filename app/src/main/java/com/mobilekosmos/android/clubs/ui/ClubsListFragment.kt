@@ -20,7 +20,7 @@ import com.mobilekosmos.android.clubs.databinding.FragmentClubsBinding
 import com.mobilekosmos.android.clubs.ui.model.ClubsViewModel
 
 
-class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
+class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
 
     private lateinit var clubsListAdapter: ClubsListAdapter
     private val viewModel: ClubsViewModel by viewModels()
@@ -38,9 +38,11 @@ class ClubsFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
             container,
             false
         )
-        // Set the lifecycleOwner so DataBinding can observe LiveData
+
+        // Set the lifecycleOwner so DataBinding can observe LiveData.
         binding.lifecycleOwner = viewLifecycleOwner
 
+        // Initializes the viewModel variable in the xml layout file.
         binding.viewModel = viewModel
 
         clubsListAdapter = ClubsListAdapter(this)

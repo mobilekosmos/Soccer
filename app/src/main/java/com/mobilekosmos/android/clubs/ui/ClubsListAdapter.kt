@@ -15,7 +15,7 @@ import com.mobilekosmos.android.clubs.ui.ClubsListAdapter.ClubViewHolder
 class ClubsListAdapter(clickListener: OnClubClickListener?) :
     RecyclerView.Adapter<ClubViewHolder>() {
 
-    // We don't use lateinit because we cannot guaranty it's not accessed before initialization (getItemCount() is being called before).
+    // We don't use lateinit because we cannot guarantee it's not accessed before initialization (getItemCount() is being called before).
     var dataset: List<ClubEntity>? = null
         set(value) {
             field = value
