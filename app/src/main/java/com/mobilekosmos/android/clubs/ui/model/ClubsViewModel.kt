@@ -1,5 +1,6 @@
 package com.mobilekosmos.android.clubs.ui.model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.mobilekosmos.android.clubs.data.repository.ClubsRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+// TODO: ideally inject the repository for testing purposes.
 //class MyViewModel(private val repository: ClubsRepository) : ViewModel() {
 class ClubsViewModel : ViewModel() {
 
@@ -16,13 +18,10 @@ class ClubsViewModel : ViewModel() {
         SORT_BY_NAME_ASCENDING, SORT_BY_VALUE_DESCENDING
     }
 
-    // TODO: for testing purposes we would move this to the constructor, maybe using DI so we can mock it. For this demo it's just fine.
-    private val clubsRepository = ClubsRepository()
-
     private var sortingMode = SortingMode.SORT_BY_NAME_ASCENDING
 
     // Uses prefix "_" as it's the naming convention used in backing properties.
-    // We are use LazyThreadSafetyMode.NONE because using this only from the MainThread.
+    // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
     private val _clubs: MutableLiveData<List<ClubEntity>> by lazy(LazyThreadSafetyMode.NONE) {
         MutableLiveData<List<ClubEntity>>().also {
             fetchClubListFromRepository()
@@ -38,7 +37,7 @@ class ClubsViewModel : ViewModel() {
      * Event triggered for network error. This is private to avoid exposing a
      * way to set this value to observers.
      */
-    // We are use LazyThreadSafetyMode.NONE because using this only from the MainThread.
+    // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
     private val _eventNetworkError:MutableLiveData<Boolean> by lazy(LazyThreadSafetyMode.NONE) {
         MutableLiveData<Boolean>()
     }
@@ -68,7 +67,7 @@ class ClubsViewModel : ViewModel() {
     // use this instead of MutableLiveData because with the latest we would need a separate variable
     // and handling for storing if we already showed the sorted event or not.
     // MutableStateFlow on the other hand would emit instantly that's why we don't use it.
-    // We are use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
+    // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
     // TODO: Need to test LazyThreadSafetyMode.NONE being used from the test, not sure about the Threading behavior in that case.
     private val _eventSorted: MutableSharedFlow<SortingMode> by lazy(LazyThreadSafetyMode.NONE) {
         MutableSharedFlow()
@@ -89,7 +88,7 @@ class ClubsViewModel : ViewModel() {
                 //  maybe possible with MutableList, are there any cons?
 
                 // Here you can not call _clubs.value = clubsRepository.getAllClubs()
-                var clubsList = clubsRepository.getAllClubs()
+                var clubsList = ClubsRepository.getAllClubs()
                 clubsList = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, clubsList)
 
                 _clubs.value = clubsList
@@ -130,6 +129,9 @@ class ClubsViewModel : ViewModel() {
         }
     }
 
+    // In this case we do sorting logic in the ViewModel because the repository should only manage
+    // the single source of truth but not modifications needed by UI.
+    // ------------------------------------------------------------------------------------------------
     // TODO: Maybe use a coroutine for the sorting.
     private fun sortClubsList(sortingMode: SortingMode) {
         _clubs.value?.let {
@@ -148,4 +150,5 @@ class ClubsViewModel : ViewModel() {
             }
         }
     }
+    // ------------------------------------------------------------------------------------------------
 }
