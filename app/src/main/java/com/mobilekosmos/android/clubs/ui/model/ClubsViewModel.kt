@@ -6,22 +6,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
 import com.mobilekosmos.android.clubs.data.repository.ClubsRepository
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 //class MyViewModel(private val repository: ClubsRepository) : ViewModel() {
-class ClubsViewModel() : ViewModel() {
+class ClubsViewModel : ViewModel() {
 
     enum class SortingMode {
         SORT_BY_NAME_ASCENDING, SORT_BY_VALUE_DESCENDING
     }
 
+    // TODO: for testing purposes we would move this to the constructor, maybe using DI so we can mock it. For this demo it's just fine.
     private val clubsRepository = ClubsRepository()
+
     private var sortingMode = SortingMode.SORT_BY_NAME_ASCENDING
 
     // Uses prefix "_" as it's the naming convention used in backing properties.
-    private val _clubs: MutableLiveData<List<ClubEntity>> by lazy {
+    // We are use LazyThreadSafetyMode.NONE because using this only from the MainThread.
+    private val _clubs: MutableLiveData<List<ClubEntity>> by lazy(LazyThreadSafetyMode.NONE) {
         MutableLiveData<List<ClubEntity>>().also {
             fetchClubListFromRepository()
         }
@@ -36,7 +38,8 @@ class ClubsViewModel() : ViewModel() {
      * Event triggered for network error. This is private to avoid exposing a
      * way to set this value to observers.
      */
-    private val _eventNetworkError:MutableLiveData<Boolean> by lazy {
+    // We are use LazyThreadSafetyMode.NONE because using this only from the MainThread.
+    private val _eventNetworkError:MutableLiveData<Boolean> by lazy(LazyThreadSafetyMode.NONE) {
         MutableLiveData<Boolean>()
     }
 
@@ -60,7 +63,14 @@ class ClubsViewModel() : ViewModel() {
     val isNetworkErrorShown: LiveData<Boolean>
         get() = _isNetworkErrorShown
 
-    private val _eventSorted: MutableSharedFlow<SortingMode> by lazy {
+    // We use SharedFlow because it doesn't emit instantly after starting observing and then it just
+    // emits when the value changed, so we are using this for the purpose of "One Shot Action". We also
+    // use this instead of MutableLiveData because with the latest we would need a separate variable
+    // and handling for storing if we already showed the sorted event or not.
+    // MutableStateFlow on the other hand would emit instantly that's why we don't use it.
+    // We are use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
+    // TODO: Need to test LazyThreadSafetyMode.NONE being used from the test, not sure about the Threading behavior in that case.
+    private val _eventSorted: MutableSharedFlow<SortingMode> by lazy(LazyThreadSafetyMode.NONE) {
         MutableSharedFlow()
     }
     val eventSorted = _eventSorted.asSharedFlow()
@@ -78,7 +88,7 @@ class ClubsViewModel() : ViewModel() {
                 //  _clubs.value = clubsRepository.getAllClubs().apply{sortGivenList(SortingMode.SORT_BY_NAME_ASCENDING, this)}
                 //  maybe possible with MutableList, are there any cons?
 
-                // Here you cannot call _clubs.value = clubsRepository.getAllClubs()
+                // Here you can not call _clubs.value = clubsRepository.getAllClubs()
                 var clubsList = clubsRepository.getAllClubs()
                 clubsList = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, clubsList)
 
