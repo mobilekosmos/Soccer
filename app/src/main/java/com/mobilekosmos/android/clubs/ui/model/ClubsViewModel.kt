@@ -1,6 +1,5 @@
 package com.mobilekosmos.android.clubs.ui.model
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,10 +22,25 @@ class ClubsViewModel : ViewModel() {
     // Uses prefix "_" as it's the naming convention used in backing properties.
     // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
     private val _clubs: MutableLiveData<List<ClubEntity>> by lazy(LazyThreadSafetyMode.NONE) {
+        // by lazy normally expects a value but since we load async we create a mutable liveData with no value assigned to it.
+        // "also" returns the empty MutableLiveData and at the same time runs a lambda.
+        // The real value is then set in the called function.
         MutableLiveData<List<ClubEntity>>().also {
             fetchClubListFromRepository()
         }
     }
+    /* Just for reference, above is same as following JAVA code:
+        (from https://developer.android.com/topic/libraries/architecture/viewmodel#java):
+
+        private MutableLiveData<List<ClubEntity>> clubs;
+        public LiveData<List<ClubEntity>> getClubs() {
+        if (clubs == null) {
+            clubs = new MutableLiveData<List<ClubEntity>>();
+            fetchClubListFromRepository();
+        }
+        return clubs;
+    }
+     */
 
     // LiveData.value is still @Nullable so you must always use ?operator when accessing.
     // https://proandroiddev.com/improving-livedata-nullability-in-kotlin-45751a2bafb7
@@ -68,7 +82,7 @@ class ClubsViewModel : ViewModel() {
     // and handling for storing if we already showed the sorted event or not.
     // MutableStateFlow on the other hand would emit instantly that's why we don't use it.
     // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
-    // TODO: Need to test LazyThreadSafetyMode.NONE being used from the test, not sure about the Threading behavior in that case.
+    // TODO: Need to test LazyThreadSafetyMode.NONE being used from the tests, not sure about the Threading behavior in that case.
     private val _eventSorted: MutableSharedFlow<SortingMode> by lazy(LazyThreadSafetyMode.NONE) {
         MutableSharedFlow()
     }
