@@ -1,13 +1,16 @@
 package com.mobilekosmos.android.clubs.ui.model
 
+import androidx.annotation.AnyThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
 import com.mobilekosmos.android.clubs.data.repository.ClubsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO: ideally inject the repository for testing purposes.
 //class MyViewModel(private val repository: ClubsRepository) : ViewModel() {
@@ -34,12 +37,12 @@ class ClubsViewModel : ViewModel() {
 
         private MutableLiveData<List<ClubEntity>> clubs;
         public LiveData<List<ClubEntity>> getClubs() {
-        if (clubs == null) {
-            clubs = new MutableLiveData<List<ClubEntity>>();
-            fetchClubListFromRepository();
+            if (clubs == null) {
+                clubs = new MutableLiveData<List<ClubEntity>>();
+                fetchClubListFromRepository();
+            }
+            return clubs;
         }
-        return clubs;
-    }
      */
 
     // LiveData.value is still @Nullable so you must always use ?operator when accessing.
@@ -97,19 +100,16 @@ class ClubsViewModel : ViewModel() {
         _eventNetworkError.value = false
         viewModelScope.launch {
             try {
-                // TODO: call could look like this:
-                //  _clubs.value = clubsRepository.getAllClubs().apply{sortGivenList(SortingMode.SORT_BY_NAME_ASCENDING, this)}
-                //  maybe possible with MutableList, are there any cons?
-
                 // Here you can not call _clubs.value = clubsRepository.getAllClubs()
                 // because the lazy initialization did not finish yet and you would actually recall this function again.
 
                 // To avoid saving the resulting array in a variable we work with the retrofit response instead.
                 // TODO: Ideally we shouldn't know anything about Retrofit here, but just for simplicity we do. There is a todo in the retrofit api class to address this.
-                val response = ClubsRepository.getAllClubs()
-                val body = response.body()
-                if (response.isSuccessful && body != null) {
-                    _clubs.value = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, body)
+                val apiResponse = ClubsRepository.getAllClubs()
+                val clubsList = apiResponse.body()
+                if (apiResponse.isSuccessful && clubsList != null) {
+//                    _clubs.value = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, body)
+                    _clubs.value = clubsList.applyMainSafeSort(SortingMode.SORT_BY_NAME_ASCENDING)
                 } else {
                     if (clubs.value.isNullOrEmpty()) {
                         _eventNetworkError.value = true
@@ -154,23 +154,48 @@ class ClubsViewModel : ViewModel() {
     // In this case we do sorting logic in the ViewModel because the repository should only manage
     // the single source of truth but not modifications needed by UI.
     // ------------------------------------------------------------------------------------------------
-    // TODO: Maybe use a coroutine for the sorting.
     private fun sortClubsList(sortingMode: SortingMode) {
+//        _clubs.value?.let {
+//            _clubs.value = getListSorted(sortingMode, it)
+//        }
         _clubs.value?.let {
-            _clubs.value = getListSorted(sortingMode, it)
+            viewModelScope.launch {
+                _clubs.value = it.applyMainSafeSort(sortingMode)
+            }
         }
     }
 
-    private fun getListSorted(sortingMode: SortingMode, clubsList:List<ClubEntity>) : List<ClubEntity> {
+//    private fun getListSorted(sortingMode: SortingMode, clubsList:List<ClubEntity>) : List<ClubEntity> {
+//        return when (sortingMode) {
+//            SortingMode.SORT_BY_NAME_ASCENDING -> {
+//                clubsList.sortedBy { it.name }
+//            }
+//            SortingMode.SORT_BY_VALUE_DESCENDING -> {
+//                // TODONT: list manipulation chaining is mostly slower than own implementation.
+//                clubsList.sortedBy { it.value }.reversed()
+//            }
+//        }
+//    }
+
+    private fun List<ClubEntity>.applySort(sortingMode: SortingMode): List<ClubEntity> {
         return when (sortingMode) {
             SortingMode.SORT_BY_NAME_ASCENDING -> {
-                clubsList.sortedBy { it.name }
+                this@applySort.sortedBy { it.name }
             }
             SortingMode.SORT_BY_VALUE_DESCENDING -> {
                 // TODO: list manipulation chaining is mostly slower than own implementation.
-                clubsList.sortedBy { it.value }.reversed()
+                this@applySort.sortedBy { it.value }.reversed()
             }
         }
     }
+
+    // I have this from the Android Tutorial "Advanced Coroutines on Android", but you won't find
+    // "AnyThread" being used a lot in other projects, I think it just means that the code runs in the
+    // background.
+    @AnyThread
+    suspend fun List<ClubEntity>.applyMainSafeSort(sortingMode: SortingMode) =
+        withContext(Dispatchers.Default) {
+            this@applyMainSafeSort.applySort(sortingMode)
+        }
     // ------------------------------------------------------------------------------------------------
 }
