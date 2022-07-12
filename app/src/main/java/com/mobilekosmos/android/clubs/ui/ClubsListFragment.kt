@@ -1,6 +1,7 @@
 package com.mobilekosmos.android.clubs.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import android.widget.Toast
@@ -174,6 +175,7 @@ class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
      * Method for displaying a Toast after the list was sorted using the toggle filter menu.
      */
     private fun showSortedListToast(toastMessage: String) {
+        Log.d("+++", "toastMessage: $toastMessage")
         Toast.makeText(activity, toastMessage, Toast.LENGTH_SHORT).show()
     }
 

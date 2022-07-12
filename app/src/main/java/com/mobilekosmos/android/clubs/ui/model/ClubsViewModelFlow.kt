@@ -7,15 +7,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
-import com.mobilekosmos.android.clubs.data.repository.ClubsRepository
+import com.mobilekosmos.android.clubs.data.repository.ClubsRepositoryFlow
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // TODO: ideally inject the repository for testing purposes.
 //class MyViewModel(private val repository: ClubsRepository) : ViewModel() {
-class ClubsViewModel : ViewModel() {
+class ClubsViewModelFlow : ViewModel() {
 
     enum class SortingMode {
         SORT_BY_NAME_ASCENDING, SORT_BY_VALUE_DESCENDING
@@ -56,7 +58,7 @@ class ClubsViewModel : ViewModel() {
      * way to set this value to observers.
      */
     // We use LazyThreadSafetyMode.NONE to avoid using thread synchronization because we are using this only from the MainThread.
-    private val _eventNetworkError:MutableLiveData<Boolean> by lazy(LazyThreadSafetyMode.NONE) {
+    private val _eventNetworkError: MutableLiveData<Boolean> by lazy(LazyThreadSafetyMode.NONE) {
         MutableLiveData<Boolean>()
     }
 
@@ -100,30 +102,32 @@ class ClubsViewModel : ViewModel() {
         _isNetworkErrorShown.value = false
         _eventNetworkError.value = false
         viewModelScope.launch {
-            try {
-                // Here you can not call _clubs.value = clubsRepository.getAllClubs()
-                // because the lazy initialization did not finish yet and you would actually recall this function again.
+            // Here you can not call _clubs.value = clubsRepository.getAllClubs()
+            // because the lazy initialization did not finish yet and you would actually recall this function again.
 
-                // To avoid saving the resulting array in a variable we work with the retrofit response instead.
-                // TODO: Ideally we shouldn't know anything about Retrofit here, but just for simplicity we do. There is a todo in the retrofit api class to address this.
-                val apiResponse = ClubsRepository.getAllClubs()
-                val clubsList = apiResponse.body()
-                if (apiResponse.isSuccessful && clubsList != null) {
-//                    _clubs.value = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, body)
-                    _clubs.value = clubsList.applyMainSafeSort(SortingMode.SORT_BY_NAME_ASCENDING)
-                } else {
+            // viewModelScope uses the MainThread Dispatcher by default so we don't need to use "withContext(Dispatchers.Main)"
+            // to access the UI.
+
+            // TODO: Ideally we shouldn't know anything about Retrofit here, but just for simplicity we do. There is a todo in the retrofit api class to address this.
+            ClubsRepositoryFlow.clubsFlow
+                .catch { exception ->
+                    // TODO: extend/improve error handling: check internet connection, listen to connection state changes and automatically retry, etc.
                     if (clubs.value.isNullOrEmpty()) {
                         _eventNetworkError.value = true
                     }
                 }
-                // viewModelScope uses the MainThread Dispatcher by default so we don't need to use "withContext(Dispatchers.Main)"
-                // to access the UI.
-            } catch (ex: Exception) {
-                // TODO: extend/improve error handling: check internet connection, listen to connection state changes and automatically retry, etc.
-                if (clubs.value.isNullOrEmpty()) {
-                    _eventNetworkError.value = true
+                .collect {
+                    // To avoid saving the resulting array in a variable we work with the retrofit response instead.
+                    val clubsList = it.body()
+                    if (it.isSuccessful && clubsList != null) {
+                        _clubs.value =
+                            clubsList.applyMainSafeSort(SortingMode.SORT_BY_NAME_ASCENDING)
+                    } else {
+                        if (clubs.value.isNullOrEmpty()) {
+                            _eventNetworkError.value = true
+                        }
+                    }
                 }
-            }
         }
     }
 
