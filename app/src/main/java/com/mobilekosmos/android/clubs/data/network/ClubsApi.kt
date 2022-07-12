@@ -10,6 +10,7 @@ import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit
 // With flavors we set this in build.gradle
 //private const val BASE_URL = "https://public.allaboutapps.at/hiring/clubs.json"
 
+// TODO: encapsulate retrofit results maybe like here: https://proandroiddev.com/modeling-retrofit-responses-with-sealed-classes-and-coroutines-9d6302077dfe
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
  * full Kotlin compatibility.
@@ -105,7 +107,7 @@ private val retrofit = Retrofit.Builder()
 interface ClubsApiService {
     // With flavors we set this in [build.gradle].
     @GET(BuildConfig.HOST_URL)
-    suspend fun getClubs(): List<ClubEntity>
+    suspend fun getClubs(): Response<List<ClubEntity>>
 }
 
 /**

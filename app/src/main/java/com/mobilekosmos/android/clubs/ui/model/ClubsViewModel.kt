@@ -102,18 +102,26 @@ class ClubsViewModel : ViewModel() {
                 //  maybe possible with MutableList, are there any cons?
 
                 // Here you can not call _clubs.value = clubsRepository.getAllClubs()
-                var clubsList = ClubsRepository.getAllClubs()
-                clubsList = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, clubsList)
+                // because the lazy initialization did not finish yet and you would actually recall this function again.
 
-                _clubs.value = clubsList
-
+                // To avoid saving the resulting array in a variable we work with the retrofit response instead.
+                // TODO: Ideally we shouldn't know anything about Retrofit here, but just for simplicity we do. There is a todo in the retrofit api class to address this.
+                val response = ClubsRepository.getAllClubs()
+                val body = response.body()
+                if (response.isSuccessful && body != null) {
+                    _clubs.value = getListSorted(SortingMode.SORT_BY_NAME_ASCENDING, body)
+                } else {
+                    if (clubs.value.isNullOrEmpty()) {
+                        _eventNetworkError.value = true
+                    }
+                }
                 // viewModelScope uses the MainThread Dispatcher by default so we don't need to use "withContext(Dispatchers.Main)"
                 // to access the UI.
             } catch (ex: Exception) {
-                // TODO: extend/improve error handling: check internet connection, show UI element
-                //  to retry loading or hear for connection state changes.
-                if (clubs.value.isNullOrEmpty())
+                // TODO: extend/improve error handling: check internet connection, listen to connection state changes and automatically retry, etc.
+                if (clubs.value.isNullOrEmpty()) {
                     _eventNetworkError.value = true
+                }
             }
         }
     }

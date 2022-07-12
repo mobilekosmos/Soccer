@@ -5,6 +5,7 @@ import com.mobilekosmos.android.clubs.data.network.ClubsApi
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 // Sample if using blocking connection. Retrofit runs safely in the background so not needed for it.
 //// TODO: ideally this should be a singleton.
@@ -22,7 +23,7 @@ import kotlinx.coroutines.withContext
 object ClubsRepository {
     // We rely on Retrofit's httpClient disk cache instead of Room for this simple project.
     // "No need to change context to Dispatchers.IO as Retrofit handles that automatically."
-    suspend fun getAllClubs(): List<ClubEntity> {
+    suspend fun getAllClubs(): Response<List<ClubEntity>> {
         return ClubsApi.RETROFIT_SERVICE.getClubs()
     }
 }
