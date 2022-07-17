@@ -20,15 +20,16 @@ import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.mobilekosmos.android.clubs.R
 import com.mobilekosmos.android.clubs.data.model.ClubEntity
 import com.mobilekosmos.android.clubs.databinding.FragmentClubsBinding
-import com.mobilekosmos.android.clubs.ui.model.ClubsViewModel
+import com.mobilekosmos.android.clubs.ui.model.ClubsViewModelFlowHilt
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
 
     private lateinit var clubsListAdapter: ClubsListAdapter
-    private val viewModel: ClubsViewModel by viewModels()
+    private val viewModel: ClubsViewModelFlowHilt by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -154,15 +155,15 @@ class ClubsListFragment : Fragment(), ClubsListAdapter.OnClubClickListener {
     /**
      * Method for displaying a Toast after the list was sorted using the toggle filter menu.
      */
-    private fun showSortedListToast(sortingMode: ClubsViewModel.SortingMode) {
+    private fun showSortedListToast(sortingMode: ClubsViewModelFlowHilt.SortingMode) {
         context?.let {
             when (sortingMode) {
-                ClubsViewModel.SortingMode.SORT_BY_NAME_ASCENDING -> showSortedListToast(
+                ClubsViewModelFlowHilt.SortingMode.SORT_BY_NAME_ASCENDING -> showSortedListToast(
                         it.getString(
                                 R.string.event_sorted_by_name
                         )
                 )
-                ClubsViewModel.SortingMode.SORT_BY_VALUE_DESCENDING -> showSortedListToast(
+                ClubsViewModelFlowHilt.SortingMode.SORT_BY_VALUE_DESCENDING -> showSortedListToast(
                         it.getString(
                                 R.string.event_sort_by_value
                         )

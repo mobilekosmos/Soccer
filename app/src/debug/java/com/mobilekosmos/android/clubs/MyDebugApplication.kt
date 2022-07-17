@@ -4,7 +4,7 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.util.DebugLogger
 
-class MyDebugApplication : MyApplication(), ImageLoaderFactory {
+class MyDebugApplication : MyApplicationHilt(), ImageLoaderFactory {
 
     // TODO: Only use in debug builds, TAG used in Logcat: RealImageLoader
     override fun newImageLoader(): ImageLoader {

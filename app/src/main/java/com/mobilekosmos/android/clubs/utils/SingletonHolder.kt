@@ -1,4 +1,4 @@
-package com.mobilekosmos.android.clubs
+package com.mobilekosmos.android.clubs.utils
 
 // Source: https://bladecoder.medium.com/kotlin-singletons-with-argument-194ef06edd9e
 open class SingletonHolder<out T : Any, in A>(creator: (A) -> T) {

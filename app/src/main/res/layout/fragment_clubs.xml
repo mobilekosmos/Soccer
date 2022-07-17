@@ -8,7 +8,7 @@
 
         <variable
                 name="viewModel"
-                type="com.mobilekosmos.android.clubs.ui.model.ClubsViewModel" />
+                type="com.mobilekosmos.android.clubs.ui.model.ClubsViewModelFlowHilt" />
     </data>
 
     <FrameLayout
