@@ -29,4 +29,6 @@
     <string name="event_sorted_by_name">Sorted by club name</string>
     <string name="event_sort_by_value">Sorted by club value</string>
     <string name="retry">Retry</string>
+    <string name="no_network_connection" translation_description="Snackbar message when there is not network connection">No internet connection.</string>
+    <string name="no_network_description" translation_description="Message to be shown when user opens the app without any network connection. [CHAR_LIMIT=500]">You seem to be offline, try:\n\n - Turning off airplane mode\n\n - Turning on mobile data or Wi-Fi\n\n - Checking the signal in your area</string>
 </resources>

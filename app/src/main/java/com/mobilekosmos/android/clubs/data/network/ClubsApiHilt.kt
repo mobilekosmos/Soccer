@@ -10,6 +10,7 @@ import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.internal.closeQuietly
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -52,8 +53,6 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
 
     // Create a cache object
     private val DISK_CACHE_SIZE_HILT = 1 * 1024 * 1024 // 1 MB
-    private val httpDiskCacheDirectoryHilt = File(context.cacheDir, "http-cache")
-    private val diskCacheHilt = Cache(httpDiskCacheDirectoryHilt, DISK_CACHE_SIZE_HILT.toLong())
 
     // create a network cache interceptor, setting the max age to 1 minute
     private val networkOfflineCacheInterceptor = Interceptor { chain ->
@@ -86,6 +85,7 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
                 .maxStale(1, TimeUnit.DAYS)
                 .build()
         }
+
         val response = chain.proceed(request)
         // Servers may set "no-cache" in the response, so we remove this.
         response.newBuilder()
@@ -99,14 +99,15 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
     private val networkLoggingInterceptor = HttpLoggingInterceptor()
         .setLevel(HttpLoggingInterceptor.Level.BODY)
 
-    // Create the httpClient, configure it
-// with cache, network cache interceptor and logging interceptor
-// TODO: don't use loggingInterceptor in release build.
+    // TODO: "Explicit termination method 'close' not called"
     private val httpClient = OkHttpClient.Builder()
-        .cache(diskCacheHilt)
+        .cache(Cache(
+            directory = File(context.cacheDir, "http-cache"),
+            maxSize = DISK_CACHE_SIZE_HILT.toLong()
+        ))
         .addNetworkInterceptor(networkCacheInterceptor)
         .addInterceptor(networkOfflineCacheInterceptor)
-        .addInterceptor(networkLoggingInterceptor)
+        .apply { if (BuildConfig.DEBUG) { addInterceptor(networkLoggingInterceptor) } }
         .build()
 
     // Create the Retrofit with the httpClient
@@ -116,7 +117,7 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
         .client(httpClient)
         .build()
 
-    val RETROFIT_SERVICE: ClubsApiServiceHilt by lazy {
+    val retrofitService: ClubsApiServiceHilt by lazy {
         retrofit.create(ClubsApiServiceHilt::class.java)
     }
 }

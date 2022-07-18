@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class ClubsRepositoryFlowHilt @Inject constructor(private val service : ClubsApiHilt) {
     val clubsFlow: Flow<Response<List<ClubEntity>>> = flow {
-        val latestNews = service.RETROFIT_SERVICE.getClubs()
+        val latestNews = service.retrofitService.getClubs()
         emit(latestNews) // Emits the result of the request to the flow.
     }
 }

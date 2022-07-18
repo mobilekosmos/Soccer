@@ -3,21 +3,21 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/nav_graph"
-        app:startDestination="@id/FirstFragment">
+        app:startDestination="@id/navigation_clubs_list">
 
     <!-- There is a bug where setting label in the first fragment leads to all other fragments breaking "setTitle" being called inside other fragments.
     So avoid using label and set the title programmatically. -->
     <fragment
-            android:id="@+id/FirstFragment"
+            android:id="@+id/navigation_clubs_list"
             android:name="com.mobilekosmos.android.clubs.ui.ClubsListFragment"
             tools:layout="@layout/fragment_clubs">
 
         <action
                 android:id="@+id/showClubDetails"
-                app:destination="@id/SecondFragment" />
+                app:destination="@id/navigation_club_detail" />
     </fragment>
     <fragment
-            android:id="@+id/SecondFragment"
+            android:id="@+id/navigation_club_detail"
             android:name="com.mobilekosmos.android.clubs.ui.ClubDetailFragment"
             tools:layout="@layout/fragment_detail">
 
@@ -25,4 +25,9 @@
                 android:name="clubDetail"
                 app:argType="com.mobilekosmos.android.clubs.data.model.ClubEntity" />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_no_network"
+        android:name="com.mobilekosmos.android.clubs.ui.NoNetworkConnectionFragment"
+        android:label="@string/no_network_connection"
+        tools:layout="@layout/fragment_no_network" />
 </navigation>
