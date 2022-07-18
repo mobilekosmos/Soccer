@@ -5,7 +5,7 @@
         android:id="@+id/nav_graph"
         app:startDestination="@id/navigation_clubs_list">
 
-    <!-- There is a bug where setting label in the first fragment leads to all other fragments breaking "setTitle" being called inside other fragments.
+    <!-- There is a bug where setting the label here leads to all other fragments breaking "setTitle" being called inside other fragments.
     So avoid using label and set the title programmatically. -->
     <fragment
             android:id="@+id/navigation_clubs_list"
@@ -28,6 +28,5 @@
     <fragment
         android:id="@+id/navigation_no_network"
         android:name="com.mobilekosmos.android.clubs.ui.NoNetworkConnectionFragment"
-        android:label="@string/no_network_connection"
         tools:layout="@layout/fragment_no_network" />
 </navigation>

@@ -10,7 +10,6 @@ import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.internal.closeQuietly
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -71,6 +70,8 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
 
         request = request.newBuilder().cacheControl(cacheControl).build()
         chain.proceed(request)
+        // TODO: StrictMode policy violation: android.os.strictmode.UntaggedSocketViolation:
+        //       Untagged socket detected; use TrafficStats.setTrafficStatsTag() to track all network usage.
     }
 
     private val networkCacheInterceptor = Interceptor { chain ->
@@ -100,6 +101,7 @@ class ClubsApiHilt @Inject constructor (context: Context, private val connectivi
         .setLevel(HttpLoggingInterceptor.Level.BODY)
 
     // TODO: "Explicit termination method 'close' not called"
+    //  and StrictMode policy violation; ~duration=654 ms: android.os.strictmode.DiskReadViolation
     private val httpClient = OkHttpClient.Builder()
         .cache(Cache(
             directory = File(context.cacheDir, "http-cache"),
