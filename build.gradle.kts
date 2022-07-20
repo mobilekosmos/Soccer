@@ -1,5 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
+// TODO FIX: Duplicate content roots detected
+//			Path [C:/Workspace/Github/Soccer/app/build/generated/source/kapt/greenFlavorDebug] of module [Soccer.app.main] was removed from modules [Soccer.app.main]"
+//			Also 2 more paths were deduplicated. See idea log for details
 buildscript {
     repositories {
         google()
