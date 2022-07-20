@@ -1,11 +1,6 @@
 # Local configuration file (sdk path, etc)
 /local.properties
 
-/.idea/caches/build_file_checksums.ser
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/captures
 .externalNativeBuild
 
 # built application files
