@@ -9,7 +9,7 @@ android {
     compileSdkVersion 32
     defaultConfig {
         applicationId "com.mobilekosmos.android.clubs"
-        minSdkVersion 23
+        minSdkVersion 29
         // Ignore warning: API 33 still not tested with latest gradle plugin 7.2.1
         targetSdkVersion 32
         versionCode 1
@@ -18,10 +18,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
             // TODO: before release, must make sure all work with these flags.
-//            minifyEnabled true
-//            shrinkResources true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
