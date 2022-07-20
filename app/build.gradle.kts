@@ -74,12 +74,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.0")
 
     // Dagger Hilt
-    implementation(Libs.HILT_ANDROID)
-    androidTestImplementation(Libs.HILT_TESTING)
-    kapt(Libs.HILT_COMPILER)
-    kaptAndroidTest(Libs.HILT_COMPILER)
+    implementation("${Libs.HILT_ANDROID}:${Versions.HILT_AGP}")
+    androidTestImplementation("${Libs.HILT_TESTING}:${Versions.HILT_AGP}")
+    kapt("${Libs.HILT_COMPILER}:${Versions.HILT_AGP}")
+    kaptAndroidTest("${Libs.HILT_COMPILER}:${Versions.HILT_AGP}")
 
-    testImplementation(Libs.JUNIT)
+    testImplementation("${Libs.JUNIT}:${Versions.JUNIT}")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0-alpha07")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
 }
